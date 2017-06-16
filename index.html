@@ -1,0 +1,19 @@
+<html>
+    <head>
+        <!-- http://chancejs.com/ -->
+        <script type="text/javascript" src="chance.min.js"></script>
+        <!-- https://dmauro.github.io/Keypress/  -->
+            <!-- <script type="text/javascript" src=""></script>  -->
+        <script type="text/javascript">
+            function getRandomIntInclusiveUnique(min, max, count) {
+                console.log(min, max, count)
+                console.log(chance.unique(chance.integer, count, {"min": min, "max": max}));
+            }
+        </script>
+    </head>
+    <body>
+        <label>Min: </label><input type="number" name="min" id="min" min="1" max="200" value="1"> <br />
+        <label>Max: </label><input type="number" name="max" id="max" min="1" max="200" value="15"> <br />
+        <input type="button" value="Click for random" onclick="getRandomIntInclusiveUnique(parseInt(document.getElementById('min').value), parseInt(document.getElementById('max').value), parseInt(document.getElementById('max').value))" />
+    </body>
+</html>
