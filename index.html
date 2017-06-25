@@ -1,19 +1,106 @@
 <html>
     <head>
+        <meta charset="UTF-8">
         <!-- http://chancejs.com/ -->
         <script type="text/javascript" src="chance.min.js"></script>
+        
         <!-- https://dmauro.github.io/Keypress/  -->
-            <!-- <script type="text/javascript" src=""></script>  -->
+        <script type="text/javascript" src="keypress.min.js"></script>
+        
         <script type="text/javascript">
-            function getRandomIntInclusiveUnique(min, max, count) {
-                console.log(min, max, count)
-                console.log(chance.unique(chance.integer, count, {"min": min, "max": max}));
+       
+          $ = document.querySelector.bind(document);
+          
+          function text_log(msg) {
+            cont = document.querySelector('#log').innerHTML
+            if (cont == "") {
+              $('#log').innerHTML = msg;
+            } else {
+              $('#log').innerHTML = cont + "\n" + msg;
             }
+            $('#log').scrollTop = $('#log').scrollHeight;
+          }
+          
+          function getSeed() {
+            var seed = new Uint32Array(1);
+            window.crypto.getRandomValues(seed);
+            text_log("Generated seed using crypto interface: " + seed[0])
+            return seed[0];
+          }
+          
+          function getRandomIntInclusiveUnique(mini, maxi) {
+          mini = parseInt(mini)
+          maxi = parseInt(maxi)
+            len = maxi - mini + 1;
+            if (len < 1) {
+              alert("Minimum er større enn maximum....")
+              return []
+            }
+            text_log("Seeding Mersenne Twister PRNG")
+            var seeded_chance = new Chance(getSeed());
+            text_log("Randomizing list of numbers. (min: " + mini + ", max: " + maxi + ", len:" + len + ")")
+            list = chance.unique(seeded_chance.integer, len, {"min": mini, "max": maxi});
+            return list;
+          }
+          
+          var list = []
+          function get_number() {
+            if (list.length == 0) {
+              text_log("Initiating PRNG")
+              list = getRandomIntInclusiveUnique($("#min").value, $("#max").value)
+              // text_log(list)
+              set_winner(list.shift())
+            } else {
+              set_winner(list.shift())
+            }
+            function set_winner(winner) {
+              text_log("Next prize goes to: " + winner)
+              $("#winner").innerHTML = winner
+              if ($("#winners").innerHTML == "") {
+                $("#winners").innerHTML = winner
+              } else {
+                $("#winners").innerHTML = $("#winners").innerHTML + ", " + winner
+              }
+            }
+          }
         </script>
+        
     </head>
     <body>
-        <label>Min: </label><input type="number" name="min" id="min" min="1" max="200" value="1"> <br />
-        <label>Max: </label><input type="number" name="max" id="max" min="1" max="200" value="15"> <br />
-        <input type="button" value="Click for random" onclick="getRandomIntInclusiveUnique(parseInt(document.getElementById('min').value), parseInt(document.getElementById('max').value), parseInt(document.getElementById('max').value))" />
+   <center> <table border="1" style="text-align: center;">
+    <tr><td colspan="2" style="font-size: 72px;"><h1 id="winner" style="font-size: 72px">… waiting …</h1></td></tr>
+    <tr><td colspan="2" ><span id="winners"></h1></td></tr>
+    <tr>
+      <td><label>Min: </label><input type="number" name="min" id="min" min="1" max="2000" value="67"></td>
+      <td><label>Max: </label><input type="number" name="max" id="max" min="1" max="2000" value="110"></td>
+    </tr>
+    <tr>
+      <td colspan="2"><input style="width: 100%" type="button" value="Click for random" onclick="get_number()" /></td>
+    </tr>
+    <tr>
+      <td colspan="2"><textarea rows="10" cols="50" id="log" name="log"></textarea></td>
+    </tr>
+    </table></center>
+        
+      
+ <script>
+          var listener = new window.keypress.Listener();
+          //listener.simple_combo("shift s", function() {
+            //$('#min').value = $('#min').value + 1;
+          //});
+         listener.should_force_event_defaults = true;
+         var my_scope = this;
+         var my_combos = listener.register_many([
+    {
+        "keys"          : "e",
+        "is_exclusive"  : true,
+        "on_keyup"      : function(event) {
+            console.log("e pressed")
+            return false
+        },
+        "this"          : my_scope
+    }
+]);
+</script>
     </body>
 </html>
